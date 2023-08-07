@@ -4,6 +4,9 @@ import (
 	"context"
 	"crypto/ecdsa"
 	"errors"
+	"fmt"
+	"github.com/ethereum/go-ethereum"
+	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/accounts/keystore"
 	"github.com/ethereum/go-ethereum/common"
@@ -40,9 +43,14 @@ func GetTxnOpts(transactionData structs.TransactionOptions) *bind.TransactOpts {
 	txnOpts, err := bind.NewKeyedTransactorWithChainID(privateKey, ChainId)
 	CheckError("Error in getting transactor: ", err)
 	txnOpts.Nonce = big.NewInt(int64(nonce))
-	txnOpts.GasPrice = big.NewInt(100000)
+	gasPrice, err := transactionData.Client.SuggestGasPrice(context.Background())
+	CheckError("Error in getting suggested gas price: ", err)
+	txnOpts.GasPrice = gasPrice
 	txnOpts.Value = transactionData.EtherValue
-	txnOpts.GasLimit = 50000000
+	gasLimit, err := GetGasLimit(transactionData, txnOpts)
+	CheckError("Error in getting gasLimit: ", err)
+	txnOpts.GasLimit = gasLimit
+	//txnOpts.GasLimit = 50000000
 	return txnOpts
 }
 
@@ -80,4 +88,35 @@ func CheckError(msg string, err error) {
 	if err != nil {
 		panic(msg + err.Error())
 	}
+}
+
+func GetGasLimit(transactionData structs.TransactionOptions, txnOpts *bind.TransactOpts) (uint64, error) {
+	if transactionData.MethodName == "" {
+		return 0, nil
+	}
+	parsedData, err := abi.JSON(strings.NewReader(transactionData.ABI))
+	if err != nil {
+		log.Error("Error in parsing abi: ", err)
+		return 0, err
+	}
+	inputData, err := parsedData.Pack(transactionData.MethodName, transactionData.Parameters...)
+	if err != nil {
+		log.Error("Error in calculating inputData: ", err)
+		return 0, err
+	}
+	contractAddress := common.HexToAddress(transactionData.ContractAddress)
+	msg := ethereum.CallMsg{
+		From:     common.HexToAddress(transactionData.AccountAddress),
+		To:       &contractAddress,
+		GasPrice: txnOpts.GasPrice,
+		Value:    txnOpts.Value,
+		Data:     inputData,
+	}
+	gasLimit, err := transactionData.Client.EstimateGas(context.Background(), msg)
+	if err != nil {
+		log.Error("error in estimating gas: ", err)
+		return 0, err
+	}
+	fmt.Println("Estimated Gas: ", gasLimit)
+	return gasLimit, nil
 }

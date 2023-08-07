@@ -3,34 +3,24 @@ package contract_interaction
 import (
 	"fmt"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethclient"
-	"math/big"
 	"razor/bindings"
 	"razor/structs"
 	"razor/utils"
 )
 
-func SetValue(txnData structs.TransactionOptions, value *big.Int) (common.Hash, error) {
-	fmt.Println("Sending Set transaction...")
-	txnData.ContractAddress = utils.ContractAddress
-	txnData.MethodName = "set"
-	txnData.ABI = bindings.GetSetContractMetaData.ABI
-	txnData.Parameters = []interface{}{value}
+func Reveal(txnData structs.TransactionOptions, epoch uint32, tree bindings.RevealMerkleTree, signature []byte) (common.Hash, error) {
+	fmt.Println("Sending Reveal transaction...")
+	txnData.ContractAddress = utils.RevealMockAddress
+	txnData.MethodName = "reveal"
+	txnData.ABI = bindings.RevealMockMetaData.ABI
+	txnData.Parameters = []interface{}{epoch, tree, signature}
 	txnOpts := utils.GetTxnOpts(txnData)
 
-	getSetContract := GetGetSetContract(txnData.Client)
-	txn, err := getSetContract.Set(txnOpts, value)
+	revealMockContract := GetRevealMockContract(txnData.Client)
+	txn, err := revealMockContract.Reveal(txnOpts, epoch, tree, signature)
 	if err != nil {
 		return common.Hash{0x00}, err
 	}
-	fmt.Println("Set Txn Hash: ", txn.Hash())
+	fmt.Println("Reveal txn hash: ", txn.Hash())
 	return txn.Hash(), nil
-}
-
-func GetValue(client *ethclient.Client) *big.Int {
-	getSetContract := GetGetSetContract(client)
-	callOpts := utils.GetOptions()
-	value, err := getSetContract.Get(&callOpts)
-	utils.CheckError("Error in getting value: ", err)
-	return value
 }

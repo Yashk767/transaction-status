@@ -14,3 +14,11 @@ func GetGetSetContract(client *ethclient.Client) *bindings.GetSetContract {
 	}
 	return getSetContract
 }
+
+func GetRevealMockContract(client *ethclient.Client) *bindings.RevealMock {
+	revealMock, err := bindings.NewRevealMock(common.HexToAddress(utils.RevealMockAddress), client)
+	if err != nil {
+		panic(err)
+	}
+	return revealMock
+}
