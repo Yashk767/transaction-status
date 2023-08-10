@@ -1,6 +1,6 @@
-# Transaction-status
-We will be able to see how much time is required to get the transaction status moved from pending state to status as `1`. 
-We also log a time required for state change
+The code is developed for SKALE staging network.
+
+On running the code, we will be able to see that `client.EstimateGas` fails for reveal transaction even when all the parameters are correct.
 
 ### Steps to run
 **_NOTE:_** Golang stable version should be installed
