@@ -4,16 +4,16 @@
 package bindings
 
 import (
-"errors"
-"math/big"
-"strings"
+	"errors"
+	"math/big"
+	"strings"
 
-ethereum "github.com/ethereum/go-ethereum"
-"github.com/ethereum/go-ethereum/accounts/abi"
-"github.com/ethereum/go-ethereum/accounts/abi/bind"
-"github.com/ethereum/go-ethereum/common"
-"github.com/ethereum/go-ethereum/core/types"
-"github.com/ethereum/go-ethereum/event"
+	ethereum "github.com/ethereum/go-ethereum"
+	"github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/event"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -43,7 +43,7 @@ type RevealMerkleTree struct {
 
 // RevealMockMetaData contains all meta data concerning the RevealMock contract.
 var RevealMockMetaData = &bind.MetaData{
-	ABI: "[{\"inputs\":[],\"name\":\"commitmentHash\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"depth\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"numActiveCollections\",\"outputs\":[{\"internalType\":\"uint16\",\"name\":\"\",\"type\":\"uint16\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint32\",\"name\":\"epoch\",\"type\":\"uint32\"},{\"components\":[{\"components\":[{\"internalType\":\"uint16\",\"name\":\"leafId\",\"type\":\"uint16\"},{\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"internalType\":\"structReveal.AssignedAsset[]\",\"name\":\"values\",\"type\":\"tuple[]\"},{\"internalType\":\"bytes32[][]\",\"name\":\"proofs\",\"type\":\"bytes32[][]\"},{\"internalType\":\"bytes32\",\"name\":\"root\",\"type\":\"bytes32\"}],\"internalType\":\"structReveal.MerkleTree\",\"name\":\"tree\",\"type\":\"tuple\"},{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"}],\"name\":\"reveal\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"salt\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"_commitmentHash\",\"type\":\"bytes32\"}],\"name\":\"setCommitmentHash\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"_salt\",\"type\":\"bytes32\"}],\"name\":\"setSalt\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"toAssign\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
+	ABI: "[{\"inputs\":[],\"name\":\"depth\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"numActiveCollections\",\"outputs\":[{\"internalType\":\"uint16\",\"name\":\"\",\"type\":\"uint16\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint32\",\"name\":\"epoch\",\"type\":\"uint32\"},{\"components\":[{\"components\":[{\"internalType\":\"uint16\",\"name\":\"leafId\",\"type\":\"uint16\"},{\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"internalType\":\"structReveal.AssignedAsset[]\",\"name\":\"values\",\"type\":\"tuple[]\"},{\"internalType\":\"bytes32[][]\",\"name\":\"proofs\",\"type\":\"bytes32[][]\"},{\"internalType\":\"bytes32\",\"name\":\"root\",\"type\":\"bytes32\"}],\"internalType\":\"structReveal.MerkleTree\",\"name\":\"tree\",\"type\":\"tuple\"},{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"}],\"name\":\"reveal\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"toAssign\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
 }
 
 // RevealMockABI is the input ABI used to generate the binding from.
@@ -192,37 +192,6 @@ func (_RevealMock *RevealMockTransactorRaw) Transact(opts *bind.TransactOpts, me
 	return _RevealMock.Contract.contract.Transact(opts, method, params...)
 }
 
-// CommitmentHash is a free data retrieval call binding the contract method 0xf6098ce8.
-//
-// Solidity: function commitmentHash() view returns(bytes32)
-func (_RevealMock *RevealMockCaller) CommitmentHash(opts *bind.CallOpts) ([32]byte, error) {
-	var out []interface{}
-	err := _RevealMock.contract.Call(opts, &out, "commitmentHash")
-
-	if err != nil {
-		return *new([32]byte), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new([32]byte)).(*[32]byte)
-
-	return out0, err
-
-}
-
-// CommitmentHash is a free data retrieval call binding the contract method 0xf6098ce8.
-//
-// Solidity: function commitmentHash() view returns(bytes32)
-func (_RevealMock *RevealMockSession) CommitmentHash() ([32]byte, error) {
-	return _RevealMock.Contract.CommitmentHash(&_RevealMock.CallOpts)
-}
-
-// CommitmentHash is a free data retrieval call binding the contract method 0xf6098ce8.
-//
-// Solidity: function commitmentHash() view returns(bytes32)
-func (_RevealMock *RevealMockCallerSession) CommitmentHash() ([32]byte, error) {
-	return _RevealMock.Contract.CommitmentHash(&_RevealMock.CallOpts)
-}
-
 // Depth is a free data retrieval call binding the contract method 0x631c56ef.
 //
 // Solidity: function depth() view returns(uint256)
@@ -285,37 +254,6 @@ func (_RevealMock *RevealMockCallerSession) NumActiveCollections() (uint16, erro
 	return _RevealMock.Contract.NumActiveCollections(&_RevealMock.CallOpts)
 }
 
-// Salt is a free data retrieval call binding the contract method 0xbfa0b133.
-//
-// Solidity: function salt() view returns(bytes32)
-func (_RevealMock *RevealMockCaller) Salt(opts *bind.CallOpts) ([32]byte, error) {
-	var out []interface{}
-	err := _RevealMock.contract.Call(opts, &out, "salt")
-
-	if err != nil {
-		return *new([32]byte), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new([32]byte)).(*[32]byte)
-
-	return out0, err
-
-}
-
-// Salt is a free data retrieval call binding the contract method 0xbfa0b133.
-//
-// Solidity: function salt() view returns(bytes32)
-func (_RevealMock *RevealMockSession) Salt() ([32]byte, error) {
-	return _RevealMock.Contract.Salt(&_RevealMock.CallOpts)
-}
-
-// Salt is a free data retrieval call binding the contract method 0xbfa0b133.
-//
-// Solidity: function salt() view returns(bytes32)
-func (_RevealMock *RevealMockCallerSession) Salt() ([32]byte, error) {
-	return _RevealMock.Contract.Salt(&_RevealMock.CallOpts)
-}
-
 // ToAssign is a free data retrieval call binding the contract method 0xcbb24791.
 //
 // Solidity: function toAssign() view returns(uint256)
@@ -367,46 +305,3 @@ func (_RevealMock *RevealMockSession) Reveal(epoch uint32, tree RevealMerkleTree
 func (_RevealMock *RevealMockTransactorSession) Reveal(epoch uint32, tree RevealMerkleTree, signature []byte) (*types.Transaction, error) {
 	return _RevealMock.Contract.Reveal(&_RevealMock.TransactOpts, epoch, tree, signature)
 }
-
-// SetCommitmentHash is a paid mutator transaction binding the contract method 0x4c2cbde7.
-//
-// Solidity: function setCommitmentHash(bytes32 _commitmentHash) returns()
-func (_RevealMock *RevealMockTransactor) SetCommitmentHash(opts *bind.TransactOpts, _commitmentHash [32]byte) (*types.Transaction, error) {
-	return _RevealMock.contract.Transact(opts, "setCommitmentHash", _commitmentHash)
-}
-
-// SetCommitmentHash is a paid mutator transaction binding the contract method 0x4c2cbde7.
-//
-// Solidity: function setCommitmentHash(bytes32 _commitmentHash) returns()
-func (_RevealMock *RevealMockSession) SetCommitmentHash(_commitmentHash [32]byte) (*types.Transaction, error) {
-	return _RevealMock.Contract.SetCommitmentHash(&_RevealMock.TransactOpts, _commitmentHash)
-}
-
-// SetCommitmentHash is a paid mutator transaction binding the contract method 0x4c2cbde7.
-//
-// Solidity: function setCommitmentHash(bytes32 _commitmentHash) returns()
-func (_RevealMock *RevealMockTransactorSession) SetCommitmentHash(_commitmentHash [32]byte) (*types.Transaction, error) {
-	return _RevealMock.Contract.SetCommitmentHash(&_RevealMock.TransactOpts, _commitmentHash)
-}
-
-// SetSalt is a paid mutator transaction binding the contract method 0x611ef44f.
-//
-// Solidity: function setSalt(bytes32 _salt) returns()
-func (_RevealMock *RevealMockTransactor) SetSalt(opts *bind.TransactOpts, _salt [32]byte) (*types.Transaction, error) {
-	return _RevealMock.contract.Transact(opts, "setSalt", _salt)
-}
-
-// SetSalt is a paid mutator transaction binding the contract method 0x611ef44f.
-//
-// Solidity: function setSalt(bytes32 _salt) returns()
-func (_RevealMock *RevealMockSession) SetSalt(_salt [32]byte) (*types.Transaction, error) {
-	return _RevealMock.Contract.SetSalt(&_RevealMock.TransactOpts, _salt)
-}
-
-// SetSalt is a paid mutator transaction binding the contract method 0x611ef44f.
-//
-// Solidity: function setSalt(bytes32 _salt) returns()
-func (_RevealMock *RevealMockTransactorSession) SetSalt(_salt [32]byte) (*types.Transaction, error) {
-	return _RevealMock.Contract.SetSalt(&_RevealMock.TransactOpts, _salt)
-}
-

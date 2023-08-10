@@ -4,8 +4,10 @@ import (
 	"errors"
 	"fmt"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/ethereum/go-ethereum/log"
 	"math/big"
-	"razor/bindings"
+	"os"
+	"path"
 	"razor/contract_interaction"
 	"razor/structs"
 	"razor/utils"
@@ -15,7 +17,7 @@ import (
 func main() {
 	address := "0xbd3e0a1d11163934df10501c9e1a18fbaa9ecaf4"
 	password := "Test@123"
-	provider := "https://rpc-mumbai.maticvigil.com"
+	provider := "https://staging-v3.skalenodes.com/v1/staging-aware-chief-gianfar"
 
 	client, err := ethclient.Dial(provider)
 	utils.CheckError("Error in dialing: ", err)
@@ -26,39 +28,59 @@ func main() {
 		Password:       password,
 	}
 
-	epoch := uint32(5637935)
-	revealMerkleTree := bindings.RevealMerkleTree{
-		Values: []bindings.RevealAssignedAsset{{LeafId: 0, Value: big.NewInt(183545)}, {LeafId: 0, Value: big.NewInt(183545)}, {LeafId: 0, Value: big.NewInt(183545)}},
-		Proofs: [][][32]byte{{{}}, {{}}, {{}}},
-		Root:   [32]byte{154, 188, 11, 170, 156, 94, 233, 187, 24, 136, 148, 155, 128, 83, 235, 177, 203, 59, 105, 207, 72, 22, 252, 231, 135, 196, 138, 181, 81, 79, 227, 171},
+	account := utils.Account{
+		Address:  address,
+		Password: password,
+	}
+	epoch := uint32(5638336)
+
+	log.Debug("Getting transaction options...")
+	defaultPath, err := os.Getwd()
+	utils.CheckError("Error in fetching parent path: ", err)
+	keystorePath := path.Join(defaultPath, "test_accounts")
+
+	signature, _, err := utils.CalculateSecret(account, epoch, keystorePath, utils.ChainId)
+	utils.CheckError("Error in calculating secret: ", err)
+
+	fmt.Println("SIGNATURE: ", signature)
+
+	commitData := utils.CommitData{
+		AssignedCollections:    map[int]bool{0: true},
+		SeqAllottedCollections: []*big.Int{big.NewInt(0), big.NewInt(0), big.NewInt(0)},
+		Leaves:                 []*big.Int{big.NewInt(184431)},
 	}
 
-	signature := []byte{19, 157, 154, 240, 37, 198, 165, 111, 212, 167, 4, 153, 236, 179, 141, 78, 140, 23, 164, 89, 44, 53, 34, 224, 53, 112, 25, 193, 53, 235, 113, 246, 11, 210, 84, 30, 128, 247, 129, 73, 230, 45, 74, 66, 159, 65, 67, 91, 194, 180, 47, 8, 24, 239, 97, 246, 143, 13, 233, 11, 7, 61, 228, 239, 27}
+	merkleTree, err := utils.CreateMerkle(commitData.Leaves)
+	utils.CheckError("Error in getting merkle tree: ", err)
 
-	revealtxn, err := contract_interaction.Reveal(txnData, epoch, revealMerkleTree, signature)
+	log.Debug("Generating tree reveal data...")
+	treeRevealData := utils.GenerateTreeRevealData(merkleTree, commitData)
+
+	fmt.Println("TREE REVEAL DATA: ", treeRevealData)
+	fmt.Println("SIGNATURE: ", signature)
+
+	revealTxn, err := contract_interaction.Reveal(txnData, epoch, treeRevealData, signature)
 	utils.CheckError("Reveal Txn error: ", err)
 
-	WaitForBlockCompletion(client, revealtxn.String())
+	WaitForBlockCompletion(client, revealTxn.String())
 
 }
 
 func WaitForBlockCompletion(client *ethclient.Client, hashToRead string) {
 	timeout := 30
-	go func() {
-		for start := time.Now(); time.Since(start) < time.Duration(timeout)*time.Second; {
-			fmt.Println("Checking if transaction is mined....")
-			transactionStatus := utils.CheckTransactionReceipt(client, hashToRead)
-			if transactionStatus == 0 {
-				fmt.Println("TIME TO GET TRANSACTION STATUS: ", time.Since(start))
-				err := errors.New("transaction mining unsuccessful")
-				utils.CheckError("Error: ", err)
-				return
-			} else if transactionStatus == 1 {
-				fmt.Println("TIME TO GET TRANSACTION STATUS: ", time.Since(start))
-				fmt.Println("Transaction mined successfully")
-				return
-			}
-			time.Sleep(3 * time.Second)
+	for start := time.Now(); time.Since(start) < time.Duration(timeout)*time.Second; {
+		fmt.Println("Checking if transaction is mined....")
+		transactionStatus := utils.CheckTransactionReceipt(client, hashToRead)
+		if transactionStatus == 0 {
+			fmt.Println("TIME TO GET TRANSACTION STATUS: ", time.Since(start))
+			err := errors.New("transaction mining unsuccessful")
+			utils.CheckError("Error: ", err)
+			return
+		} else if transactionStatus == 1 {
+			fmt.Println("TIME TO GET TRANSACTION STATUS: ", time.Since(start))
+			fmt.Println("Transaction mined successfully")
+			return
 		}
-	}()
+		time.Sleep(3 * time.Second)
+	}
 }
