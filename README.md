@@ -1,4 +1,13 @@
-The code is developed for SKALE staging network.
+The code is developed for SKALE staging chain `staging-aware-chief-gianfar`, other details of the chain are as shown below
+```
+CHAIN NAME : staging-aware-chief-gianfar 
+RPC URL. : https://staging-v3.skalenodes.com/v1/staging-aware-chief-gianfar 
+WS URL. : wss://staging-v3.skalenodes.com/v1/ws/staging-aware-chief-gianfar 
+FS URL : https://staging-v3.skalenodes.com/fs/staging-aware-chief-gianfar 
+Explorer: : https://staging-aware-chief-gianfar.explorer.staging-v3.skalenodes.com 
+CHAIN ID. : 0x5a79c44e | 1517929550 
+CHAIN Hash : 0x000005a79c44e56b567aec92ca1e1e9241ea1abf63a9211c587d05d3d53332af
+```
 
 On running the code, we will be able to see that `client.EstimateGas` fails for reveal transaction even when all the parameters are correct.
 
